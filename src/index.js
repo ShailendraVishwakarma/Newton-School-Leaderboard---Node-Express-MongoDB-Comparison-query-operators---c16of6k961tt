@@ -1,19 +1,36 @@
-const express = require('express')
+const express = require('express');
 const app = express()
-const bodyParser = require("body-parser");
-const port = 8080
-app.use(express.urlencoded());
 
-// Parse JSON bodies (as sent by API clients)
-app.use(express.json());
-const { data } = require('./data')
-
-app.use(bodyParser.urlencoded({ extended: false }))
-
-app.use(bodyParser.json())
-// your code goes here
+const Subscriber = require('./models/subscribers');
+const ObjectId = require("mongoose");
 
 
-app.listen(port, () => console.log(`App listening on port ${port}!`))
+app.get('/subscribers', (req, res) => {
+    Subscriber.find().then(subscribers => res.send(subscribers));
+    return;
+});
+app.get('/subscribers/names', (req, res) => {
+    Subscriber.find().select({name: 1, subscribedChannel: 1}).then(subscribers => res.send(subscribers));
+    return;
+});
+app.get('/subscribers/:id', (req, res) => {
+    const id = req.params.id;
+    Subscriber.find({_id : id}).then(subscribers => subscribers.map(subscribers => res.send(subscribers))).catch(error => res.status(400).send({message: error.message}));
+    return;
+});
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 module.exports = app;
